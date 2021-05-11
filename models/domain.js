@@ -13,9 +13,9 @@ module.exports = (sequelize, DataTypes) => {
   }
   Domain.init(
     {
-      name: DataTypes.STRING,
-      type: DataTypes.STRING,
-      value: DataTypes.STRING,
+      name: DataTypes.TEXT,
+      type: DataTypes.TEXT,
+      value: DataTypes.TEXT,
     },
     {
       sequelize,

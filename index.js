@@ -18,7 +18,7 @@ const initStream = (filename = './inputs/sample.txt') => {
   let readStream = fs.createReadStream(filename);
 
   readStream.on('data', async (chunk) => {
-    const arr = chunk.toString('utf-8').split('\r\n');
+    const arr = chunk.toString('utf-8').split('\n');
     await DomainSchema.bulkCreate(await validJSON(arr));
   });
 
