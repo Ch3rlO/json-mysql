@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { execSync } = require('child_process');
 const DomainSchema = require('./models/index').Domain;
 const InvalidJSONSchema = require('./models/index').InvalidJSON;
 
@@ -7,7 +8,7 @@ const validJSON = async (arr) => {
   const newArr = [];
   for (const json of arr) {
     try {
-      newArr.push(JSON.parse(json));
+      newArr.push(JSON.parse(json.replace('\r', '')));
     } catch (err) {
       await InvalidJSONSchema.create({ value: json });
     }
@@ -15,9 +16,9 @@ const validJSON = async (arr) => {
   return newArr;
 };
 
-const initStream = (filename = './inputs/sample.txt') => {
+const initStream = (filename = './inputs/sample1.txt') => {
   const readStream = fs.createReadStream(filename, {
-    highWaterMark: 0.5 * 1024,
+    highWaterMark: 3 * 1024,
     encoding: 'utf-8',
   });
 
@@ -34,4 +35,17 @@ const initStream = (filename = './inputs/sample.txt') => {
   });
 };
 
-initStream();
+const initRead = async (filename = './inputs/sample.txt') => {
+  let isCompleted = false;
+  let count = 1000;
+  while (!isCompleted) {
+    let arr = execSync(`cat ${filename} | head -n ${count}`)
+      .toString('utf-8')
+      .split('\n');
+    await DomainSchema.bulkCreate(await validJSON(arr));
+    count = count * 2;
+    if (arr.length < 1) isCompleted = true;
+  }
+};
+
+initRead();
