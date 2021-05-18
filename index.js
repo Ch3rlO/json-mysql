@@ -15,12 +15,15 @@ const validJSON = async (arr) => {
 };
 
 const initStream = (filename = './inputs/sample.txt') => {
-  let readStream = fs.createReadStream(filename);
+  const readStream = fs.createReadStream(filename);
 
   readStream.on('data', async (chunk) => {
     const arr = chunk.toString('utf-8').split('\n');
     await DomainSchema.bulkCreate(await validJSON(arr));
+    global.gc();
   });
+
+  readStream.on('end', () => console.log({ d: 'ok' }));
 
   readStream.on('error', function (err) {
     console.log({ err });
