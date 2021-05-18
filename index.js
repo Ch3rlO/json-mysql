@@ -15,7 +15,9 @@ const validJSON = async (arr) => {
 };
 
 const initStream = (filename = './inputs/sample.txt') => {
-  const readStream = fs.createReadStream(filename);
+  const readStream = fs.createReadStream(filename, {
+    highWaterMark: 10 * 1024,
+  });
 
   readStream.on('data', async (chunk) => {
     const arr = chunk.toString('utf-8').split('\n');
