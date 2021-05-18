@@ -35,7 +35,7 @@ const initStream = (filename = './inputs/sample1.txt') => {
   });
 };
 
-const initRead = async (filename = './inputs/sample.txt') => {
+const initRead = async (filename = './inputs/sample1.txt') => {
   let isCompleted = false;
   let count = 1000;
   while (!isCompleted) {
