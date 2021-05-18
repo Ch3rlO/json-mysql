@@ -2,6 +2,7 @@ const fs = require('fs');
 const DomainSchema = require('./models/index').Domain;
 const InvalidJSONSchema = require('./models/index').InvalidJSON;
 
+const after = process.memoryUsage();
 const validJSON = async (arr) => {
   const newArr = [];
   for (const json of arr) {
@@ -16,12 +17,12 @@ const validJSON = async (arr) => {
 
 const initStream = (filename = './inputs/sample.txt') => {
   const readStream = fs.createReadStream(filename, {
-    highWaterMark: 10 * 1024,
+    highWaterMark: 0.5 * 1024,
+    encoding: 'utf-8',
   });
 
   readStream.on('data', async (chunk) => {
-    const arr = chunk.toString('utf-8').split('\n');
-    await DomainSchema.bulkCreate(await validJSON(arr));
+    await DomainSchema.bulkCreate(await validJSON(chunk.split('\n')));
     global.gc();
   });
 
@@ -29,6 +30,7 @@ const initStream = (filename = './inputs/sample.txt') => {
 
   readStream.on('error', function (err) {
     console.log({ err });
+    console.log({ before: process.memoryUsage(), after });
   });
 };
 
